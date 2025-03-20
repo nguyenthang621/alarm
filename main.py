@@ -37,8 +37,8 @@ def save_missing_to_file(missing_numbers, output_file):
     
     # Ghi các số bị miss vào file
     try:
-        with open(output_file, 'w') as f:
-            for number in sorted(missing_numbers):  # Sắp xếp để dễ đọc
+        with open(output_file, 'w') as f:  # mode w là xóa hết dữ liệu cũ rồi mới ghi mới
+            for number in sorted(missing_numbers):  
                 f.write(f"{number}\n")
         print(f"Missing numbers saved to {output_file}")
     except Exception as e:
