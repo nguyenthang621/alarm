@@ -8,11 +8,24 @@
       type="text/css"
       href="{{ url_for('static', filename='css/bootstrap.min.css') }}"
     />
+    <!-- Favicon trên tab trình duyệt -->
+    <link
+      rel="icon"
+      type="image/png"
+      href="{{ url_for('static', filename='images/logo_tab.png') }}"
+    />
     <title>Device Status</title>
     <style>
       body {
         background-color: #f8f9fa;
-        padding: 20px;
+      }
+      .navbar-oracle {
+        background-color: #161513;
+        padding: 10px 20px;
+      }
+      .navbar-oracle .navbar-brand img {
+        width: 48px;
+        height: 32px;
       }
       .container {
         max-width: 800px;
@@ -48,15 +61,27 @@
     </style>
   </head>
   <body>
+    <!-- Navbar kiểu Oracle -->
+    <nav class="navbar navbar-expand-lg navbar-oracle fixed-top">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">
+          <img
+            src="{{ url_for('static', filename='images/Oracle_Corporation_logo.svg.png') }}"
+            alt="Oracle Logo"
+          />
+        </a>
+      </div>
+    </nav>
+
     <div class="container">
       <h1 class="mb-4 text-primary">Device Status</h1>
       <div class="stats">
-        <span class="badge bg-secondary me-2"
-          >Total Devices: <span id="total-devices">0</span></span
-        >
-        <span class="badge bg-danger"
-          >Devices Down: <span id="total-cache">0</span></span
-        >
+        <span class="badge bg-secondary me-2">
+          Total Devices: <span id="total-devices">0</span>
+        </span>
+        <span class="badge bg-danger">
+          Devices Down: <span id="total-cache">0</span>
+        </span>
       </div>
       <div id="numbers-container" class="card p-3">
         <!-- Dữ liệu sẽ được cập nhật tại đây -->
