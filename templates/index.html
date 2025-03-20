@@ -3,20 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='css/bootstrap.min.css') }}"
+    />
     <title>Device Status</title>
     <style>
       body {
-        font-family: Arial, sans-serif;
-        margin: 20px;
-        background-color: #f0f0f0;
+        background-color: #f8f9fa;
+        padding: 20px;
       }
-      h1 {
-        color: #333;
-        font-size: 24px;
-        margin-bottom: 20px;
-      }
-      #numbers-container {
-        max-width: 600px;
+      .container {
+        max-width: 800px;
       }
       .device-list {
         list-style-type: none;
@@ -26,45 +25,63 @@
         gap: 10px;
       }
       .device-item {
-        background-color: #ff4444; /* Màu đỏ cho trạng thái down */
+        background-color: #dc3545;
         color: white;
-        padding: 10px 15px;
+        padding: 8px 12px;
         border-radius: 5px;
-        font-weight: bold;
+        font-weight: 500;
         text-align: center;
         min-width: 100px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
       .no-data {
-        color: #666;
+        color: #6c757d;
         font-style: italic;
         padding: 10px;
         background-color: #fff;
-        border: 1px solid #ddd;
+        border: 1px solid #dee2e6;
         border-radius: 5px;
-        display: inline-block;
+      }
+      .stats {
+        margin-bottom: 20px;
       }
     </style>
   </head>
   <body>
-    <h1>Device Down</h1>
-    <div id="numbers-container">
-      <!-- Dữ liệu sẽ được cập nhật tại đây -->
+    <div class="container">
+      <h1 class="mb-4 text-primary">Device Status</h1>
+      <div class="stats">
+        <span class="badge bg-secondary me-2"
+          >Total Devices: <span id="total-devices">0</span></span
+        >
+        <span class="badge bg-danger"
+          >Devices Down: <span id="total-cache">0</span></span
+        >
+      </div>
+      <div id="numbers-container" class="card p-3">
+        <!-- Dữ liệu sẽ được cập nhật tại đây -->
+      </div>
     </div>
 
     <script>
-      // Hàm cập nhật danh sách số
+      // Hàm cập nhật giao diện
       function updateNumbers() {
         fetch("/api/missing-numbers")
           .then((response) => response.json())
           .then((data) => {
             const container = document.getElementById("numbers-container");
             const numbers = data.numbers;
+            const totalCache = data.total_cache;
+            const totalDevices = data.total_devices;
+
+            // Cập nhật tổng số
+            document.getElementById("total-devices").textContent = totalDevices;
+            document.getElementById("total-cache").textContent = totalCache;
 
             // Xóa nội dung cũ
             container.innerHTML = "";
 
-            // Kiểm tra và hiển thị dữ liệu mới
+            // Kiểm tra và hiển thị danh sách số
             if (numbers.length > 0) {
               if (
                 numbers[0].startsWith("Error") ||
@@ -83,14 +100,15 @@
                 container.appendChild(ul);
               }
             } else {
-              container.innerHTML =
-                '<p class="no-data">No devices down (file is empty)</p>';
+              container.innerHTML = '<p class="no-data">No devices down</p>';
             }
           })
           .catch((error) => {
             console.error("Error fetching data:", error);
             document.getElementById("numbers-container").innerHTML =
               '<p class="no-data">Error loading data</p>';
+            document.getElementById("total-devices").textContent = "0";
+            document.getElementById("total-cache").textContent = "0";
           });
       }
 
