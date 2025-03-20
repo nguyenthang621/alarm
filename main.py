@@ -1,6 +1,7 @@
 import subprocess
 import re
 import os
+from configs import config
 
 def get_numbers_from_script(script_path):
     # Excute script and return numbers
@@ -29,39 +30,39 @@ def compare_numbers(script_numbers, file_numbers):
     missing_numbers = file_numbers - script_numbers
     return missing_numbers
 
-def save_missing_to_file(missing_numbers, output_file):
+def save_missing_to_file(missing_numbers, cache_file):
     # Tạo thư mục data nếu chưa tồn tại
-    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+    os.makedirs(os.path.dirname(cache_file), exist_ok=True)
     
     # Ghi các số bị miss vào file
     try:
-        with open(output_file, 'w') as f:
+        with open(cache_file, 'w') as f:
             for number in sorted(missing_numbers):
                 f.write(f"{number}\n")
-        print(f"Missing numbers saved to {output_file}")
+        print(f"Missing numbers saved to {cache_file}")
     except Exception as e:
         print(f"Error writing to file: {e}")
 
-def clear_file(output_file):
-    # Xóa toàn bộ nội dung file
+def clear_file(cache_file):
+    # Clear cache 
     try:
-        with open(output_file, 'w') as f:
-            f.write("")  # Ghi rỗng để xóa dữ liệu
-        print(f"Cleared {output_file}")
+        with open(cache_file, 'w') as f:
+            f.write("")  
+        print(f"Cleared {cache_file}")
     except Exception as e:
         print(f"Error clearing file: {e}")
 
 def main():
-    script_path = "../test01.sh"  
-    numbers_file = "data/devices.txt"   
-    output_file = "data/current_state_down.txt"
+    script_path = config.SCRIPT_FILE  
+    list_device = config.LIST_DEVICE   
+    cache_file = config.CACHE_FILE
     
     # get numbers from script
     script_numbers = get_numbers_from_script(script_path)
     print("Numbers from script:", script_numbers)
     
     # get numbers from file
-    file_numbers = get_numbers_from_file(numbers_file)
+    file_numbers = get_numbers_from_file(list_device)
     print("Numbers from file:", file_numbers)
     
     # compare numbers missing
@@ -69,14 +70,14 @@ def main():
     
     if missing:
         print("Numbers missing from script output:", missing)
-        save_missing_to_file(missing, output_file)
+        save_missing_to_file(missing, cache_file)
     else:
         print("All numbers from file are present in script output")
-        # Nếu không có số nào miss, xóa file current_state_down.txt
-        if os.path.exists(output_file):
-            clear_file(output_file)
+        # if all numbers are present, clear the cache file
+        if os.path.exists(cache_file):
+            clear_file(cache_file)
         else:
-            print(f"{output_file} does not exist, nothing to clear")
+            print(f"{cache_file} does not exist, nothing to clear")
 
 if __name__ == "__main__":
     main()
