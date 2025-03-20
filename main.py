@@ -1,14 +1,15 @@
 import subprocess
 import re
+import os
 
 def get_numbers_from_script(script_path):
-    # Gọi shell script và lấy output
+    # Excute script and return numbers
     try:
-        # Sử dụng universal_newlines=True cho Python 3.5 trở xuống
+        # use to python ver < 3.5
         result = subprocess.run([script_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         output = result.stdout
         
-        # Tìm tất cả số bắt đầu bằng "sip:" và lấy phần số
+        # regex to get numbers
         numbers = re.findall(r'sip:(\d+)@', output)
         return set(numbers)
     except Exception as e:
@@ -16,7 +17,7 @@ def get_numbers_from_script(script_path):
         return set()
 
 def get_numbers_from_file(file_path):
-    # Đọc danh sách số từ file
+    # read device id from file
     try:
         with open(file_path, 'r') as f:
             numbers = {line.strip() for line in f if line.strip()}
@@ -26,28 +27,42 @@ def get_numbers_from_file(file_path):
         return set()
 
 def compare_numbers(script_numbers, file_numbers):
-    # Tìm các số có trong file nhưng không có trong output của script
+    # compare numbers
     missing_numbers = file_numbers - script_numbers
     return missing_numbers
 
-def main():
-    script_path = "../test01.sh"  # Điều chỉnh đường dẫn nếu cần
-    numbers_file = "data/devices.txt"   # File chứa danh sách số cần so sánh
+def save_missing_to_file(missing_numbers, output_file):
+    # Tạo thư mục data nếu chưa tồn tại
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
     
-    # Lấy danh sách số từ script
+    # Ghi các số bị miss vào file
+    try:
+        with open(output_file, 'w') as f:
+            for number in sorted(missing_numbers):  # Sắp xếp để dễ đọc
+                f.write(f"{number}\n")
+        print(f"Missing numbers saved to {output_file}")
+    except Exception as e:
+        print(f"Error writing to file: {e}")
+
+def main():
+    script_path = "../test01.sh"  
+    numbers_file = "data/devices.txt"   
+    output_file = "data/current_state_down.txt"
+    
+    # get numbers from script
     script_numbers = get_numbers_from_script(script_path)
     print("Numbers from script:", script_numbers)
     
-    # Lấy danh sách số từ file
+    # get numbers from file
     file_numbers = get_numbers_from_file(numbers_file)
     print("Numbers from file:", file_numbers)
     
-    # So sánh và tìm số bị thiếu
+    # compare numbers missing
     missing = compare_numbers(script_numbers, file_numbers)
     
-    # In kết quả
     if missing:
         print("Numbers missing from script output:", missing)
+        save_missing_to_file(missing, output_file)
     else:
         print("All numbers from file are present in script output")
 
