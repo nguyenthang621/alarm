@@ -5,12 +5,13 @@ import re
 def get_numbers_from_script(script_path):
     # Gọi shell script và lấy output
     try:
-        result = subprocess.run([script_path], capture_output=True, text=True)
+        # Sử dụng stdout=subprocess.PIPE thay cho capture_output
+        result = subprocess.run([script_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         output = result.stdout
         
         # Tìm tất cả số bắt đầu bằng "sip:" và lấy phần số
         numbers = re.findall(r'sip:(\d+)@', output)
-        return set(numbers)  # Chuyển thành set để so sánh dễ hơn
+        return set(numbers)
     except Exception as e:
         print(f"Error running script: {e}")
         return set()
