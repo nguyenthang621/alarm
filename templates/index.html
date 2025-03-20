@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Device Status</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background-color: #f0f0f0;
+      }
+      h1 {
+        color: #333;
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+      #numbers-container {
+        max-width: 600px;
+      }
+      .device-list {
+        list-style-type: none;
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .device-item {
+        background-color: #ff4444; /* Màu đỏ cho trạng thái down */
+        color: white;
+        padding: 10px 15px;
+        border-radius: 5px;
+        font-weight: bold;
+        text-align: center;
+        min-width: 100px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .no-data {
+        color: #666;
+        font-style: italic;
+        padding: 10px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        display: inline-block;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Device Down</h1>
+    <div id="numbers-container">
+      <!-- Dữ liệu sẽ được cập nhật tại đây -->
+    </div>
+
+    <script>
+      // Hàm cập nhật danh sách số
+      function updateNumbers() {
+        fetch("/api/missing-numbers")
+          .then((response) => response.json())
+          .then((data) => {
+            const container = document.getElementById("numbers-container");
+            const numbers = data.numbers;
+
+            // Xóa nội dung cũ
+            container.innerHTML = "";
+
+            // Kiểm tra và hiển thị dữ liệu mới
+            if (numbers.length > 0) {
+              if (
+                numbers[0].startsWith("Error") ||
+                numbers[0] === "File not found"
+              ) {
+                container.innerHTML = `<p class="no-data">${numbers[0]}</p>`;
+              } else {
+                const ul = document.createElement("ul");
+                ul.className = "device-list";
+                numbers.forEach((number) => {
+                  const li = document.createElement("li");
+                  li.className = "device-item";
+                  li.textContent = number;
+                  ul.appendChild(li);
+                });
+                container.appendChild(ul);
+              }
+            } else {
+              container.innerHTML =
+                '<p class="no-data">No devices down (file is empty)</p>';
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching data:", error);
+            document.getElementById("numbers-container").innerHTML =
+              '<p class="no-data">Error loading data</p>';
+          });
+      }
+
+      // Gọi hàm ngay khi trang load
+      updateNumbers();
+
+      // Cập nhật mỗi 5 giây
+      setInterval(updateNumbers, 5000);
+    </script>
+  </body>
+</html>
