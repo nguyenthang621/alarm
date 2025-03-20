@@ -1,12 +1,11 @@
-
 import subprocess
 import re
 
 def get_numbers_from_script(script_path):
     # Gọi shell script và lấy output
     try:
-        # Sử dụng stdout=subprocess.PIPE thay cho capture_output
-        result = subprocess.run([script_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        # Sử dụng universal_newlines=True cho Python 3.5 trở xuống
+        result = subprocess.run([script_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         output = result.stdout
         
         # Tìm tất cả số bắt đầu bằng "sip:" và lấy phần số
@@ -20,7 +19,6 @@ def get_numbers_from_file(file_path):
     # Đọc danh sách số từ file
     try:
         with open(file_path, 'r') as f:
-            # Giả sử mỗi dòng là một số
             numbers = {line.strip() for line in f if line.strip()}
         return numbers
     except Exception as e:
@@ -33,7 +31,6 @@ def compare_numbers(script_numbers, file_numbers):
     return missing_numbers
 
 def main():
-    # Đường dẫn tới shell script và file danh sách số
     script_path = "../test01.sh"  # Điều chỉnh đường dẫn nếu cần
     numbers_file = "data/devices.txt"   # File chứa danh sách số cần so sánh
     
@@ -56,5 +53,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
