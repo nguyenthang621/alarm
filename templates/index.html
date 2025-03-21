@@ -17,18 +17,29 @@
     <title>Device Status</title>
     <style>
       body {
-        background-color: #f8f9fa;
+        background-color: #fff; /* Nền trắng giống Oracle */
+        margin: 0;
       }
-      .navbar-oracle {
-        background-color: #161513;
+      .banner {
+        background-color: #fff;
         padding: 10px 20px;
+        display: flex;
+        align-items: flex-end;
+        border-bottom: 2px solid #007bff; /* Đường kẻ xanh dương */
       }
-      .navbar-oracle .navbar-brand img {
-        width: 48px;
-        height: 32px;
+      .banner img {
+        width: 200px;
+        height: 60px;
+      }
+      .banner h1 {
+        font-size: 18px;
+        color: #666; /* Màu xám nhạt */
+        margin: 0;
+        padding-bottom: 12px;
       }
       .container {
         max-width: 800px;
+        padding: 20px;
       }
       .device-list {
         list-style-type: none;
@@ -61,20 +72,17 @@
     </style>
   </head>
   <body>
-    <!-- Navbar kiểu Oracle -->
-    <nav class="navbar navbar-expand-lg navbar-oracle fixed-top">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="/">
-          <img
-            src="{{ url_for('static', filename='images/Oracle_Corporation_logo.svg.png') }}"
-            alt="Oracle Logo"
-          />
-        </a>
-      </div>
-    </nav>
+    <!-- Banner kiểu Oracle -->
+    <div class="banner">
+      <img
+        src="{{ url_for('static', filename='images/banner.png') }}"
+        alt="Oracle Logo"
+      />
+      <h1>Communications Operations Monitor</h1>
+    </div>
 
     <div class="container">
-      <h1 class="mb-4 text-primary">Device Status</h1>
+      <h2 class="mb-4 text-primary">Device Status</h2>
       <div class="stats">
         <span class="badge bg-secondary me-2">
           Total Devices: <span id="total-devices">0</span>
